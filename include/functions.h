@@ -15,13 +15,9 @@ extern "C" {
 
 IWRAM_CODE void ISR_HANDLER_CB(void);
 IWRAM_CODE void fast_memset32(void *dst, uint32_t fill_val, size_t word_count);
-#ifndef RENDER_IN_THUMB
-IWRAM_CODE uint16_t *get_render_buffer(int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
-IWRAM_CODE void render_topdown(int x, int y, int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
-#else
-uint16_t *get_render_buffer(int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
-void render_topdown(int x, int y, int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
-#endif
+
+IWRAM_CODE void render_raycast_view(const int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
+IWRAM_CODE void render_topdown_view(int x, int y, const int *board, int board_width, int board_height, const Fixed_Coord_t *p_xy, uint32_t p_a);
 
 void vsync(void);
 void init_regs(void);
