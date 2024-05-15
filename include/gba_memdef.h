@@ -12,6 +12,7 @@
 #define KEY_R    256
 #define KEY_L    512
 
-
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 160
 
 #endif  /* _GBA_MEMDEF_H_ */

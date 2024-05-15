@@ -32,11 +32,13 @@ LD=$(PREFIX)g++
 AS=$(PREFIX)gcc
 OBJ_CPY=$(PREFIX)objcopy
 
+
 ARCH=-mthumb-interwork -mthumb
 IARCH=-mthumb-interwork -marm
 SPECS=-specs=gba.specs
 
-CFLAGS_BASE=-O2 -Wall -Wextra -fno-strict-aliasing -I$(INC) 
+
+CFLAGS_BASE=$(MACROS) -O2 -Wall -Wextra -fno-strict-aliasing -I$(INC) $(MACROS)
 
 ROM_CFLAGS=$(CFLAGS_BASE) $(ARCH)
 IWRAM_CFLAGS=$(CFLAGS_BASE) $(IARCH) -mlong-calls

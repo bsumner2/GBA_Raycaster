@@ -19,7 +19,7 @@ INLINE float fp24_8tof(fp_24_8_t fp) { return fp/FP24_8_SCALEF; }
 INLINE fp_24_8_t fp24_8_add(fp_24_8_t a, fp_24_8_t b) { return a+b; }
 INLINE fp_24_8_t fp24_8_sub(fp_24_8_t minnuend, fp_24_8_t subtrahend) { return minnuend - subtrahend; }
 INLINE fp_24_8_t fp24_8_mul(fp_24_8_t a, fp_24_8_t b) { return (a*b)>>FP24_8_SHAMT; }
-INLINE fp_24_8_t fp24_8_div(fp_24_8_t dividend, fp_24_8_t divisor) { return ((divisor)*FP24_8_SCALE)/(divisor); }
+INLINE fp_24_8_t fp24_8_div(fp_24_8_t dividend, fp_24_8_t divisor) { return ((dividend)*FP24_8_SCALE)/(divisor); }
 
 INLINE fp_24_8_t lu_sin(uint32_t theta) { return sin_lut[(theta>>7)&511]; }
 INLINE fp_24_8_t lu_cos(uint32_t theta) { return sin_lut[((theta>>7)+128)&511]; }

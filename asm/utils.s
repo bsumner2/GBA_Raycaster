@@ -9,6 +9,16 @@ vsync:
     BX lr
     .size vsync, .-vsync
 
+    .thumb_func
+    .align 2
+    .global gba_sqrt
+    .type gba_sqrt %function
+gba_sqrt:
+    SWI #8
+
+    BX lr
+    .size gba_sqrt, .-gba_sqrt
+
 
 
     .section .iwram, "ax", %progbits

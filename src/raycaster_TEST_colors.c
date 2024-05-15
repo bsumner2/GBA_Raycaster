@@ -1,0 +1,8 @@
+const int raycaster_colortable[6] = {
+ 0,
+ 0x7FFF,
+ 0x7C00,
+ 0x001F,
+ 0x03E0,
+ 0x10A5
+};

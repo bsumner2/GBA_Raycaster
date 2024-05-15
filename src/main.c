@@ -1,110 +1,62 @@
+#include <stddef.h>
 #include "gba_inlines.h"
 #include "gba_memdef.h"
 #include "gba_memmap.h"
-#include <stddef.h>
 #include "functions.h"
 
 
 
 static const int board[100] = {
-  1,1,1,1,1,1,1,1,1,1,
+  4,4,1,1,1,1,1,1,2,2,
+  4,0,0,0,0,0,0,0,0,2,
   1,0,0,0,0,0,0,0,0,1,
   1,0,0,0,0,0,0,0,0,1,
+  1,0,0,0,3,3,0,5,5,1,
+  1,0,0,0,3,3,0,5,0,1,
+  1,0,0,0,0,0,0,5,0,1,
   1,0,0,0,0,0,0,0,0,1,
-  1,0,0,0,0,0,0,0,0,1,
-  1,0,0,0,0,0,0,0,0,1,
-  1,0,0,0,0,0,0,0,0,1,
-  1,0,0,0,0,0,0,0,0,1,
-  1,0,0,0,0,0,0,0,0,1,
-  1,1,1,1,1,1,1,1,1,1,
+  2,0,0,0,0,0,0,0,0,4,
+  2,2,1,1,1,1,1,1,4,4,
 };
 
-typedef struct coord {
-  uint16_t x, y;
-} Coord_t;
-
-
-
-void draw_rect(int x, int y, int width, int height, uint16_t color) {
-  uint32_t colorblock = color|(color<<16);
-  uint16_t *vram_ofs = VRAM_BUFFER + y*240 + x;
-  size_t wordct;
-  if (x&1) {
-    
-    if (width&1) {
-      wordct = width>>1;
-      
-      for (int i = 0; i < height; ++i) {
-        *vram_ofs = color;
-        fast_memset32(vram_ofs+1, colorblock, wordct);
-        vram_ofs += 240;
-      }
-      return;
-    }
-
-    wordct = (--width)>>1;
-
-    for (int i = 0; i < height; ++i) {
-      *vram_ofs = color;
-
-      fast_memset32(vram_ofs+1, colorblock, wordct);
-      vram_ofs[width] = color;
-      vram_ofs += 240;
-    }
-
-    return;
-  }
-  if (width&1) {
-    wordct = (--width)>>1;
-    for (int i = 0; i < height; ++i) {
-      fast_memset32(vram_ofs, colorblock, wordct);
-      vram_ofs[width] = color;
-      vram_ofs+=240;
-    }
-    return;
-  }
-
-  wordct = width>>1;
-  for (int i = 0; i < height; ++i) {
-    fast_memset32(vram_ofs, colorblock, wordct);
-    vram_ofs+=240;
-  }
-}
-
-
-
 int main(void) {
-  uint32_t player_theta = 0;
+  uint32_t player_theta = 0, prevtheta;
   int x, y, i, j;
-  struct coord player = { 0, 0 };
+  Fixed_Coord_t player={ 2<<8, 2<<8}, prev=player;
+  bool_t moved =true, anglechange=true;
   init_regs();
   for (;;) {
+#ifdef RENDER_TOPDOWN
     vsync();
+//    vsync();
+#endif
+    vsync();
+#define TURN_RADIANS 96
     if (!(REG_KEY&KEY_LEFT)) {
-      player_theta+=64;
+      anglechange = true;
+      prevtheta = player_theta;
+      player_theta-=TURN_RADIANS;
     } else if (!(REG_KEY&KEY_RIGHT)) {
-      player_theta -= 64;
+      anglechange=true;
+      prevtheta = player_theta;
+      player_theta += TURN_RADIANS;
     }
     
     if (!(REG_KEY&KEY_UP)) {
-      player.x += lulerp_cos(player_theta);
-      player.y += lulerp_sin(player_theta);
+      prev = player;
+      player.x += lu_cos(player_theta)>>2;
+      player.y += lu_sin(player_theta)>>2;
+      moved = true;
     } else if (!(REG_KEY&KEY_DOWN)) {
-      player.x -= lulerp_cos(player_theta);
-      player.y -= lulerp_sin(player_theta);
+      prev = player;
+      player.x -= lu_cos(player_theta)>>2;
+      player.y -= lu_sin(player_theta)>>2;
+      moved = true;
     }
-
-    for (i = 0; i < 10; ++i) {
-      x = 40;
-      y = 16*i;
-      for (j = 0; j < 10; ++j) {
-        if (board[(i<<1)+(i<<3) + j])
-          draw_rect(x, y, 16, 16, 0x7FFF);
-        x += 16;
-      }
-    }
-    draw_rect(player.x>>8, player.y>>8, 4,4, 0x7C00);
+    get_render_buffer((int*)board, 10, 10, &player, player_theta);
+#ifdef RENDER_TOPDOWN
+    render_topdown(10, 10, (int*)board, 10, 10, &player, player_theta);
+#endif
   }
-
   return 0; 
 }
